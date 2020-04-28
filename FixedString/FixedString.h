@@ -34,7 +34,6 @@ public:
 	CFixedString(const uint32 value)
 	{
 
-
 	}
 
 	CFixedString(const int64 value)
