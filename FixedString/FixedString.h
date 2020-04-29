@@ -12,6 +12,13 @@ typedef unsigned int		uint32;
 typedef long long int		int64;
 typedef unsigned long long	uint64;
 
+enum class StrBaseEnum
+{
+	DEC = 10,
+	HEX = 16,
+	BIN = 2
+};
+
 //-----------------------------------------------------------------------
 //FIXED STRING CLASS
 //
@@ -27,18 +34,12 @@ template<uint32 FS_MAX_CHAR_COUNT>
 class CFixedString
 {
 public:
-	enum StrBaseEnum
-	{
-		DEC, 
-		HEX, 
-		BIN
-	};
-
 	CFixedString() noexcept;
 	CFixedString(const char* pString);
 	CFixedString(const int value);
+	explicit CFixedString(const int value, StrBaseEnum type);
+
 	// ****** TODO: Constructors to implement
-//	explicit CFixedString(const int value, StrBaseEnum type);
 // 	CFixedString(const uint32 value);
 // 	CFixedString(const int64 value);
 // 	CFixedString(const uint64 value)
@@ -132,12 +133,74 @@ CFixedString<FS_MAX_CHAR_COUNT>::CFixedString(const char* pString)
 	}
 }
 
+template<class T>
+T fspow(T value, int power)
+{
+	T outValue = value;
+	for (int i = 1; i < power ; i++)
+	{
+		outValue *= value;
+	}
+
+	return outValue;
+}
+
 template<uint32 FS_MAX_CHAR_COUNT>
 inline CFixedString<FS_MAX_CHAR_COUNT>::CFixedString(const int value)
 {
 	this->zeroMemory();
-	_itoa(value, m_fixedString, 10);
-	m_stringSize = strlen(m_fixedString) + 1;
+	int p = fspow(10, FS_MAX_CHAR_COUNT - 2);
+	if ((float)(value / p) < 10.0f)
+	{
+		_itoa_s(value, m_fixedString, FS_MAX_CHAR_COUNT, 10);
+		m_stringSize = strlen(m_fixedString);
+	}	
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline CFixedString<FS_MAX_CHAR_COUNT>::CFixedString(const int value, StrBaseEnum type)
+{
+	this->zeroMemory();
+
+	switch (type)
+	{
+	case StrBaseEnum::DEC:
+	{
+		int p = fspow(10, FS_MAX_CHAR_COUNT - 2);
+		if ((float)(value / p) < 10.0f)
+		{
+			_itoa_s(value, m_fixedString, FS_MAX_CHAR_COUNT, 16);
+			m_stringSize = strlen(m_fixedString);
+		}
+		break;
+	}
+	case StrBaseEnum::HEX:
+	{
+		int p = fspow(10, FS_MAX_CHAR_COUNT - 4); //We require 2 additional chars for "0x"
+		if ((float)(value / p) < 10.0f)
+		{
+			m_fixedString[0] = '0';
+			m_fixedString[1] = 'x';
+			_itoa_s(value, &m_fixedString[2], FS_MAX_CHAR_COUNT, 16);
+			m_stringSize = strlen(m_fixedString);
+		}
+		break;
+	}
+	case StrBaseEnum::BIN:
+	{
+		int p = fspow(10, FS_MAX_CHAR_COUNT - 4); //We require 2 additional chars for "0b"
+		/*if ((float)(value / p) < 10.0f)*/  // ****** TODO:  for binary this does not work.
+		{
+			m_fixedString[0] = '0';
+			m_fixedString[1] = 'b';
+			_itoa_s(value, &m_fixedString[2], FS_MAX_CHAR_COUNT, 2);
+			m_stringSize = strlen(m_fixedString);
+		}
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 template<uint32 FS_MAX_CHAR_COUNT>

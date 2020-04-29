@@ -4,10 +4,9 @@
 
 int main()
 {
-	CFixedString32 fixedString("HELLO WORLD");
+	CFixedString<32> fixedString(999, StrBaseEnum::BIN);
 
-	auto result = fixedString.substr(6, 5);
-
+	std::cout << fixedString.data() << std::endl;
 
 	for (const auto& c : fixedString)
 	{
