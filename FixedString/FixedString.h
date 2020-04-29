@@ -27,36 +27,25 @@ template<uint32 FS_MAX_CHAR_COUNT>
 class CFixedString
 {
 public:
+	enum StrBaseEnum
+	{
+		DEC, 
+		HEX, 
+		BIN
+	};
+
 	CFixedString() noexcept;
 	CFixedString(const char* pString);
 	CFixedString(const int value);
+	// ****** TODO: Constructors to implement
+//	explicit CFixedString(const int value, StrBaseEnum type);
+// 	CFixedString(const uint32 value);
+// 	CFixedString(const int64 value);
+// 	CFixedString(const uint64 value)
+// 	CFixedString(const float value)
+// 	CFixedString(const double value)
 
-	CFixedString(const uint32 value)
-	{
-
-	}
-
-	CFixedString(const int64 value)
-	{
-
-	}
-
-	CFixedString(const uint64 value)
-	{
-
-	}
-
-	CFixedString(const float value)
-	{
-
-	}
-
-	CFixedString(const double value)
-	{
-
-	}
-
-	explicit CFixedString(const char c, uint32 repeat) noexcept;
+	explicit CFixedString(const char singleChar, uint32 numToRepeat) noexcept;
 
 	// ****** TODO: To be implemented
 //	CFixedString(const CFixedString& fixedString);
@@ -88,6 +77,13 @@ public:
 
 	CFixedString<FS_MAX_CHAR_COUNT> substr(size_t pos, size_t len);
 
+
+	//Access by reference.
+	char& operator[](int index);
+
+	//Access by copy.
+	char operator[](int index) const;
+
 	int		asInt32() const;
 	uint32	asUint32() const;
 	int64	asInt64() const;
@@ -99,6 +95,7 @@ private:
 	void zeroMemory()
 	{
 		memset(m_fixedString, 0x00, FS_MAX_CHAR_COUNT);
+		m_stringSize = 0;
 	}
 
 private:
@@ -144,18 +141,19 @@ inline CFixedString<FS_MAX_CHAR_COUNT>::CFixedString(const int value)
 }
 
 template<uint32 FS_MAX_CHAR_COUNT>
-inline CFixedString<FS_MAX_CHAR_COUNT>::CFixedString(const char c, uint32 repeat) noexcept
+inline CFixedString<FS_MAX_CHAR_COUNT>::CFixedString(const char singleChar, uint32 numToRepeat) noexcept
 {
 	this->zeroMemory();
-	// ****** TODO: This requires a fix!
-// 	if (repeat >= 0 && repeat < FS_MAX_CHAR_COUNT)
-// 	{
-// 		memcpy(m_fixedString, 'x', repeat);
-// 	}
-// 	else
-// 	{
-// 		memcpy(m_fixedString, pChar, FS_MAX_CHAR_COUNT - 1);
-// 	}
+	if (numToRepeat >= 0 && numToRepeat < FS_MAX_CHAR_COUNT)
+	{
+		memset(m_fixedString, singleChar, numToRepeat);
+		m_stringSize = numToRepeat;
+	}
+	else
+	{
+		memset(m_fixedString, singleChar, FS_MAX_CHAR_COUNT - 1);
+		m_stringSize = FS_MAX_CHAR_COUNT - 1;
+	}
 }
 
 template<uint32 FS_MAX_CHAR_COUNT>
@@ -226,9 +224,31 @@ inline CFixedString<FS_MAX_CHAR_COUNT> CFixedString<FS_MAX_CHAR_COUNT>::substr(s
 	if ((pos + len) < FS_MAX_CHAR_COUNT)
 	{
 		// ****** TODO: Needs Implementation
+		//memcpy(str.m_pStringBuffer, m_pStringBuffer + pos, len);
+		//return CFixedString<FS_MAX_CHAR_COUNT>();
 	}
 
 	return *this;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline char & CFixedString<FS_MAX_CHAR_COUNT>::operator[](int index)
+{
+	if (m_stringSize > static_cast<size_t>(index) && index > -1)
+	{
+		return m_fixedString[index];
+	}
+	return m_fixedString[0];
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline char CFixedString<FS_MAX_CHAR_COUNT>::operator[](int index) const
+{
+	if (m_stringSize > static_cast<size_t>(index) && index > -1)
+	{
+		return m_fixedString[index];
+	}
+	return m_fixedString[0];
 }
 
 template<uint32 FS_MAX_CHAR_COUNT>
