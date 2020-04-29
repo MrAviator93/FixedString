@@ -144,8 +144,18 @@ CFixedString<FS_MAX_CHAR_COUNT>::CFixedString(const char* pString)
 }
 
 template<class T>
-T fspow(T value, int power)
+T fspow(const T& value, const uint32& power)
 {
+	if (power == 0)
+	{
+		return 1;
+	}
+
+	if (power == 1)
+	{
+		return value;
+	}
+
 	T outValue = value;
 	for (int i = 1; i < power ; i++)
 	{
