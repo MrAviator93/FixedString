@@ -1,7 +1,7 @@
 /***********************************************************************
 FILE FIXEDSTRING.H CONTAINS FIXED STRING IMPLEMENTATION
 
-FILE UTMOST REVIEW DONE ON (28.04.2020) BY ARTUR K. 
+FILE UTMOST REVIEW DONE ON (29.04.2020) BY ARTUR K. 
 ***********************************************************************/
 
 #ifndef FIXED_STRING_H
@@ -77,17 +77,35 @@ public:
 	bool isNumeric();
 	// ****** TODO: Consider implementing bool isHexDecimal(); bool isBinary(); 
 
-
 	bool startsWithNoCase(const char* pString);
 	bool startsWith(const char* pString);
 
+	//bool endsWith(const char* pString);
+
 	bool contains(const char* pString);
 
-	int countNoOccurances(const char ch);
-	int countNoOccurances(const char* pString); // ****** TODO: Must be tested
-
+	int countNoOccurances(const char& ch);
+	int countNoOccurances(const char* pString);
 
 	CFixedString<FS_MAX_CHAR_COUNT> substr(size_t pos, size_t len);
+
+	//void append(const char* pString);
+	//void appendPrefix(const char* pString);
+
+	//int compare(const char* pString);
+	//int compareNoCase(const char* pString);
+
+// 	int find(char ch, size_t startPos = 0);
+// 	int find(const char* pStrSub, size_t startPos = 0);
+// 	int findLastOccurance(char ch);
+// 	int reverseFind(char ch);
+// 	int findOneOf(const char* pStrCharSet, size_t startPos = 0);
+
+	//bool replace(size_t pos, size_t size, const char* pString);
+
+// 	void trimLeft(const int trimCutSet);
+// 	void trimRight(const int trimCutSet);
+// 	void trim(const int trimCutSet);
 
 	//Access by reference.
 	char& operator[](int index);
@@ -334,7 +352,7 @@ inline bool CFixedString<FS_MAX_CHAR_COUNT>::startsWith(const char* pString)
 }
 
 template<uint32 FS_MAX_CHAR_COUNT>
-inline bool CFixedString<FS_MAX_CHAR_COUNT>::contains(const char * pString)
+inline bool CFixedString<FS_MAX_CHAR_COUNT>::contains(const char* pString)
 {
 	if (strstr(m_fixedString, pString) != nullptr)
 	{
@@ -344,17 +362,15 @@ inline bool CFixedString<FS_MAX_CHAR_COUNT>::contains(const char * pString)
 }
 
 template<uint32 FS_MAX_CHAR_COUNT>
-inline int CFixedString<FS_MAX_CHAR_COUNT>::countNoOccurances(const char ch)
+inline int CFixedString<FS_MAX_CHAR_COUNT>::countNoOccurances(const char& ch)
 {
 	int occurances(0);
-	char* pChar = m_fixedString;
-	while (*pChar)
+	for (uint32 i = 0; i < m_stringSize; i++)
 	{
-		if (*pChar == ch)
+		if (m_fixedString[i] == *pChar)
 		{
 			occurances++;
 		}
-		*pChar++;
 	}
 	return occurances;
 }
