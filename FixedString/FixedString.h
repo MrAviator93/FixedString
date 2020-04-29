@@ -75,9 +75,19 @@ public:
 
 	bool isEmpty();
 	bool isNumeric();
+	// ****** TODO: Consider implementing bool isHexDecimal(); bool isBinary(); 
+
+
+	bool startsWithNoCase(const char* pString);
+	bool startsWith(const char* pString);
+
+	bool contains(const char* pString);
+
+	int countNoOccurances(const char ch);
+	int countNoOccurances(const char* pString); // ****** TODO: Must be tested
+
 
 	CFixedString<FS_MAX_CHAR_COUNT> substr(size_t pos, size_t len);
-
 
 	//Access by reference.
 	char& operator[](int index);
@@ -279,6 +289,85 @@ bool CFixedString<FS_MAX_CHAR_COUNT>::isNumeric()
 		}
 	}
 	return true;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline bool CFixedString<FS_MAX_CHAR_COUNT>::startsWithNoCase(const char* pString)
+{
+	int lSize = strlen(pString);
+	if (lSize > (FS_MAX_CHAR_COUNT - 1))
+	{
+		lSize = FS_MAX_CHAR_COUNT - 1;
+	}
+
+	if (strnicmp(m_fixedString, pString, lSize) == 0)
+	{
+		return true;
+	}
+	return false;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline bool CFixedString<FS_MAX_CHAR_COUNT>::startsWith(const char* pString)
+{
+	int lSize = strlen(pString);
+	if (lSize > (FS_MAX_CHAR_COUNT - 1))
+	{
+		lSize = FS_MAX_CHAR_COUNT - 1;
+	}
+
+	if (strncmp(m_fixedString, pString,  lSize) == 0)
+	{
+		return true;
+	}
+	return false;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline bool CFixedString<FS_MAX_CHAR_COUNT>::contains(const char * pString)
+{
+	if (strstr(m_fixedString, pString) != nullptr)
+	{
+		return true;
+	}
+	return false;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline int CFixedString<FS_MAX_CHAR_COUNT>::countNoOccurances(const char ch)
+{
+	int occurances(0);
+	char* pChar = m_fixedString;
+	while (*pChar)
+	{
+		if (*pChar == ch)
+		{
+			occurances++;
+		}
+		*pChar++;
+	}
+	return occurances;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline int CFixedString<FS_MAX_CHAR_COUNT>::countNoOccurances(const char* pString)
+{
+	int occurances(0);
+	const char* pOccurance = m_fixedString;
+	while (pOccurance != nullptr || (((size_t)(m_fixedString - pOccurance)) >= FS_MAX_CHAR_COUNT))
+	{
+		pOccurance = strstr(pOccurance, pString);
+		if (pOccurance != nullptr)
+		{
+			*pOccurance++;
+			occurances++;
+		}
+		else
+		{
+			break;
+		}
+	}
+	return occurances;
 }
 
 template<uint32 FS_MAX_CHAR_COUNT>
