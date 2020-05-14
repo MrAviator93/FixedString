@@ -12,15 +12,10 @@ int main()
 	std::cout << "No of \"lo\" Occurances: " << fixedString.countNoOccurances("lo") << std::endl;
 
 
-	std::cout << "Occ: " << fixedString.findLastOccurance("ll") << std::endl;
 
+	fixedString.trim(3);
 
-	std::cout << "SubStr: " << fixedString.substr(6, 7).data() << std::endl;
-
-
-	fixedString.append("test");
-
-	fixedString.appendPrefix("xxx");
+	std::cout << fixedString.getData() << std::endl;
 
 
 	std::cout << fixedString.data() << std::endl;

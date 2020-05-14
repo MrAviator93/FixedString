@@ -104,9 +104,9 @@ public:
 
 	bool replace(uint32 pos, uint32 size, const char* pString);
 
-// 	void trimLeft(const int trimCutSet);
-// 	void trimRight(const int trimCutSet);
-// 	void trim(const int trimCutSet);
+ 	void trimLeft(const int trimCutSet);
+ 	void trimRight(const int trimCutSet);
+ 	void trim(const int trimCutSet);
 
 	// Access by reference.
 	char& operator[](int index);
@@ -582,6 +582,40 @@ inline bool CFixedString<FS_MAX_CHAR_COUNT>::replace(uint32 pos, uint32 size, co
 		return true;
 	}
 	return false;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline void CFixedString<FS_MAX_CHAR_COUNT>::trimLeft(const int trimCutSet)
+{
+	if (trimCutSet > 0 && trimCutSet < m_stringSize)
+	{
+		for (int i = 0; i < (m_stringSize - trimCutSet); i++)
+		{
+			m_fixedString[i] = m_fixedString[i + trimCutSet];
+		}
+		memset(m_fixedString + m_stringSize - trimCutSet, 0x00, trimCutSet);
+		m_stringSize -= trimCutSet;
+	}
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline void CFixedString<FS_MAX_CHAR_COUNT>::trimRight(const int trimCutSet)
+{
+	if (trimCutSet > 0 && trimCutSet < m_stringSize)
+	{
+		for (int i = m_stringSize; i >= (m_stringSize - trimCutSet); i--)
+		{
+			m_fixedString[i] = 0x00;
+		}
+		m_stringSize -= trimCutSet;
+	}
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline void CFixedString<FS_MAX_CHAR_COUNT>::trim(const int trimCutSet)
+{
+	this->trimLeft(trimCutSet);
+	this->trimRight(trimCutSet);
 }
 
 template<uint32 FS_MAX_CHAR_COUNT>
