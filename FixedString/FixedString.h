@@ -7,7 +7,6 @@ FILE UTMOST REVIEW DONE ON (14.05.2020) BY ARTUR K.
 #ifndef FIXED_STRING_H
 #define FIXED_STRING_H
 
-typedef unsigned char		byte;
 typedef unsigned int		uint32;
 typedef long long int		int64;
 typedef unsigned long long	uint64;
@@ -65,7 +64,7 @@ public:
 	const char* data() { return m_fixedString; }
 	const char* buffer() const { return m_fixedString; }
 
-	//For Range-based for Statement
+	// For Range-based for Statement
 	char* begin() { return &m_fixedString[0]; }
 	char* end() { return &m_fixedString[m_stringSize]; }
 
