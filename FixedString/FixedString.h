@@ -14,9 +14,9 @@ typedef unsigned long long	uint64;
 
 enum class StrBaseEnum
 {
-	DEC = 10,
-	HEX = 16,
-	BIN = 2
+	FS_DEC = 10,
+	FS_HEX = 16,
+	FS_BIN = 2
 };
 
 //-----------------------------------------------------------------------
@@ -171,8 +171,7 @@ CFixedString<FS_MAX_CHAR_COUNT>::CFixedString(const char* pString)
 	}
 }
 
-template<class T>
-T fspow(const T& value, const uint32& power)
+int fsipow(const int& value, const uint32& power)
 {
 	if (power == 0)
 	{
@@ -184,7 +183,7 @@ T fspow(const T& value, const uint32& power)
 		return value;
 	}
 
-	T outValue = value;
+	int outValue = value;
 	for (int i = 1; i < power ; i++)
 	{
 		outValue *= value;
@@ -197,7 +196,7 @@ template<uint32 FS_MAX_CHAR_COUNT>
 inline CFixedString<FS_MAX_CHAR_COUNT>::CFixedString(const int value)
 {
 	this->zeroMemory();
-	int p = fspow(10, FS_MAX_CHAR_COUNT - 2);
+	int p = fsipow(10, FS_MAX_CHAR_COUNT - 2);
 	if ((float)(value / p) < 10.0f)
 	{
 		_itoa_s(value, m_fixedString, FS_MAX_CHAR_COUNT, 10);
@@ -212,9 +211,9 @@ inline CFixedString<FS_MAX_CHAR_COUNT>::CFixedString(const int value, StrBaseEnu
 
 	switch (type)
 	{
-	case StrBaseEnum::DEC:
+	case StrBaseEnum::FS_DEC:
 	{
-		int p = fspow(10, FS_MAX_CHAR_COUNT - 2);
+		int p = fsipow(10, FS_MAX_CHAR_COUNT - 2);
 		if ((float)(value / p) < 10.0f)
 		{
 			_itoa_s(value, m_fixedString, FS_MAX_CHAR_COUNT, 16);
@@ -222,9 +221,9 @@ inline CFixedString<FS_MAX_CHAR_COUNT>::CFixedString(const int value, StrBaseEnu
 		}
 		break;
 	}
-	case StrBaseEnum::HEX:
+	case StrBaseEnum::FS_HEX:
 	{
-		int p = fspow(10, FS_MAX_CHAR_COUNT - 4); //We require 2 additional chars for "0x"
+		int p = fsipow(10, FS_MAX_CHAR_COUNT - 4); //We require 2 additional chars for "0x"
 		if ((float)(value / p) < 10.0f)
 		{
 			m_fixedString[0] = '0';
@@ -234,9 +233,9 @@ inline CFixedString<FS_MAX_CHAR_COUNT>::CFixedString(const int value, StrBaseEnu
 		}
 		break;
 	}
-	case StrBaseEnum::BIN:
+	case StrBaseEnum::FS_BIN:
 	{
-		int p = fspow(10, FS_MAX_CHAR_COUNT - 4); //We require 2 additional chars for "0b"
+		int p = fsipow(10, FS_MAX_CHAR_COUNT - 4); //We require 2 additional chars for "0b"
 		/*if ((float)(value / p) < 10.0f)*/  // ****** TODO:  for binary this does not work.
 		{
 			m_fixedString[0] = '0';
