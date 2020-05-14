@@ -234,7 +234,7 @@ inline CFixedString<FS_MAX_CHAR_COUNT>::CFixedString(const int value, StrBaseEnu
 	}
 	case StrBaseEnum::FS_BIN:
 	{
-		int p = fsipow(10, FS_MAX_CHAR_COUNT - 4); //We require 2 additional chars for "0b"
+		int p = fsipow(10, FS_MAX_CHAR_COUNT - 4); // We require 2 additional chars for "0b"
 		/*if ((float)(value / p) < 10.0f)*/  // ****** TODO:  for binary this does not work.
 		{
 			m_fixedString[0] = '0';
