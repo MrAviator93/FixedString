@@ -89,6 +89,7 @@ public:
 
 	CFixedString<FS_MAX_CHAR_COUNT> substr(uint32 pos, uint32 len);
 
+	bool append(const char ch);
 	bool append(const char* pString);
 	bool appendPrefix(const char* pString);
 
@@ -107,6 +108,14 @@ public:
  	void trimLeft(const int trimCutSet);
  	void trimRight(const int trimCutSet);
  	void trim(const int trimCutSet);
+
+	//Assignment operators "="
+	const CFixedString<FS_MAX_CHAR_COUNT>& operator=(char ch);
+	const CFixedString<FS_MAX_CHAR_COUNT>& operator=(const char* pString);
+
+	//Append operators "+="
+	const CFixedString<FS_MAX_CHAR_COUNT>& operator+=(char ch);
+	const CFixedString<FS_MAX_CHAR_COUNT>& operator+=(const char* pString);
 
 	// Access by reference.
 	char& operator[](int index);
@@ -447,6 +456,18 @@ inline CFixedString<FS_MAX_CHAR_COUNT> CFixedString<FS_MAX_CHAR_COUNT>::substr(u
 }
 
 template<uint32 FS_MAX_CHAR_COUNT>
+inline bool CFixedString<FS_MAX_CHAR_COUNT>::append(const char ch)
+{
+	if ((m_stringSize + 1) < FS_MAX_CHAR_COUNT)
+	{
+		m_fixedString[m_stringSize + 1] = ch;
+		m_stringSize += 1;
+		return true;
+	}
+	return false;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
 inline bool CFixedString<FS_MAX_CHAR_COUNT>::append(const char* pString)
 {
 	const uint32 stringLen = strlen(pString);
@@ -587,9 +608,9 @@ inline bool CFixedString<FS_MAX_CHAR_COUNT>::replace(uint32 pos, uint32 size, co
 template<uint32 FS_MAX_CHAR_COUNT>
 inline void CFixedString<FS_MAX_CHAR_COUNT>::trimLeft(const int trimCutSet)
 {
-	if (trimCutSet > 0 && trimCutSet < m_stringSize)
+	if (trimCutSet > 0 && static_cast<uint32>(trimCutSet) < m_stringSize)
 	{
-		for (int i = 0; i < (m_stringSize - trimCutSet); i++)
+		for (int i = 0; i < (m_stringSize - static_cast<uint32>(trimCutSet)); i++)
 		{
 			m_fixedString[i] = m_fixedString[i + trimCutSet];
 		}
@@ -601,9 +622,9 @@ inline void CFixedString<FS_MAX_CHAR_COUNT>::trimLeft(const int trimCutSet)
 template<uint32 FS_MAX_CHAR_COUNT>
 inline void CFixedString<FS_MAX_CHAR_COUNT>::trimRight(const int trimCutSet)
 {
-	if (trimCutSet > 0 && trimCutSet < m_stringSize)
+	if (trimCutSet > 0 && static_cast<uint32>(trimCutSet) < m_stringSize)
 	{
-		for (int i = m_stringSize; i >= (m_stringSize - trimCutSet); i--)
+		for (int i = m_stringSize; i >= (m_stringSize - static_cast<uint32>(trimCutSet)); i--)
 		{
 			m_fixedString[i] = 0x00;
 		}
@@ -616,6 +637,48 @@ inline void CFixedString<FS_MAX_CHAR_COUNT>::trim(const int trimCutSet)
 {
 	this->trimLeft(trimCutSet);
 	this->trimRight(trimCutSet);
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline const CFixedString<FS_MAX_CHAR_COUNT>& CFixedString<FS_MAX_CHAR_COUNT>::operator=(char ch)
+{
+	this->zeroMemory();
+	m_fixedString[0] = ch;
+	m_stringSize = 1;
+	return *this;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline const CFixedString<FS_MAX_CHAR_COUNT>& CFixedString<FS_MAX_CHAR_COUNT>::operator=(const char* pString)
+{
+	const uint32 stringLen = strlen(pString);
+	if (stringLen < FS_MAX_CHAR_COUNT)
+	{
+		this->zeroMemory();
+		memcpy(m_fixedString, pString, stringLen);
+		m_stringSize = stringLen;
+	}
+	else
+	{
+		this->zeroMemory();
+		memcpy(m_fixedString, pString, FS_MAX_CHAR_COUNT - 1);
+		m_stringSize = FS_MAX_CHAR_COUNT - 1;
+	}
+	return *this;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline const CFixedString<FS_MAX_CHAR_COUNT>& CFixedString<FS_MAX_CHAR_COUNT>::operator+=(char ch)
+{
+	this->append(ch);
+	return *this;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline const CFixedString<FS_MAX_CHAR_COUNT>& CFixedString<FS_MAX_CHAR_COUNT>::operator+=(const char* pString)
+{
+	this->append(pString);
+	return *this;
 }
 
 template<uint32 FS_MAX_CHAR_COUNT>
