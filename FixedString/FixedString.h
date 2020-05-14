@@ -39,7 +39,7 @@ public:
 	CFixedString(const int value);
 	explicit CFixedString(const int value, StrBaseEnum type);
 
-	// ****** TODO: Constructors to implement
+	// ****** TODO: Constructors to consider to implement
 // 	CFixedString(const uint32 value);
 // 	CFixedString(const int64 value);
 // 	CFixedString(const uint64 value)
@@ -48,10 +48,10 @@ public:
 
 	explicit CFixedString(const char singleChar, uint32 numToRepeat) noexcept;
 
-	// ****** TODO: To be implemented
+	// ****** TODO: Consider implementing
 //	CFixedString(const CFixedString& fixedString);
 
-	// ****** TODO: To be implemented
+	// ****** TODO: Consider implementing
 // 	template<uint32 FS_MAX_CHAR_COUNT_STR_2>
 // 	CFixedString(const CFixedString<FS_MAX_CHAR_COUNT_STR_2>& fixedString);
 
@@ -61,6 +61,7 @@ public:
 	uint32 getLength() const { return m_stringSize; }
 	uint32 getReservedSize() const { return FS_MAX_CHAR_COUNT; }
 
+	const char* getData() { return m_fixedString; }
 	const char* data() { return m_fixedString; }
 	const char* buffer() const { return m_fixedString; }
 
@@ -75,33 +76,33 @@ public:
 
 	bool isEmpty();
 	bool isNumeric();
-	// ****** TODO: Consider implementing bool isHexDecimal(); bool isBinary(); 
+	bool isHexDecimal();
+	bool isBinary(); 
 
 	bool startsWithNoCase(const char* pString);
 	bool startsWith(const char* pString);
-
-	//bool endsWith(const char* pString);
-
+	bool endsWith(const char* pString);
 	bool contains(const char* pString);
 
 	int countNoOccurances(const char& ch);
 	int countNoOccurances(const char* pString);
 
-	CFixedString<FS_MAX_CHAR_COUNT> substr(size_t pos, size_t len);
+	CFixedString<FS_MAX_CHAR_COUNT> substr(uint32 pos, uint32 len);
 
-	//void append(const char* pString);
-	//void appendPrefix(const char* pString);
+	bool append(const char* pString);
+	bool appendPrefix(const char* pString);
 
-	//int compare(const char* pString);
-	//int compareNoCase(const char* pString);
+	int compare(const char* pString);
+	int compareNoCase(const char* pString);
 
-// 	int find(char ch, size_t startPos = 0);
-// 	int find(const char* pStrSub, size_t startPos = 0);
-// 	int findLastOccurance(char ch);
-// 	int reverseFind(char ch);
-// 	int findOneOf(const char* pStrCharSet, size_t startPos = 0);
+ 	int find(char ch, uint32 startPos = 0);
+ 	int find(const char* pStrSub, uint32 startPos = 0);
+ 	int findLastOccurance(char ch);
+	int findLastOccurance(const char* pStrSub);
+ 	int reverseFind(char ch);
+ 	int findOneOf(const char* pStrCharSet, uint32 startPos = 0);
 
-	//bool replace(size_t pos, size_t size, const char* pString);
+	bool replace(uint32 pos, uint32 size, const char* pString);
 
 // 	void trimLeft(const int trimCutSet);
 // 	void trimRight(const int trimCutSet);
@@ -320,15 +321,41 @@ bool CFixedString<FS_MAX_CHAR_COUNT>::isNumeric()
 }
 
 template<uint32 FS_MAX_CHAR_COUNT>
+inline bool CFixedString<FS_MAX_CHAR_COUNT>::isHexDecimal()
+{
+	if (m_stringSize > 4)
+	{
+		if (m_fixedString[0] == '0' && m_fixedString[1] == 'x' || m_fixedString[0] == '0' && m_fixedString[1] == 'X')
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline bool CFixedString<FS_MAX_CHAR_COUNT>::isBinary()
+{
+	if (m_stringSize > 4)
+	{
+		if (m_fixedString[0] == '0' && m_fixedString[1] == 'b')
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
 inline bool CFixedString<FS_MAX_CHAR_COUNT>::startsWithNoCase(const char* pString)
 {
-	int lSize = strlen(pString);
-	if (lSize > (FS_MAX_CHAR_COUNT - 1))
+	const uint32 stringLen = strlen(pString);
+	if (stringLen > (FS_MAX_CHAR_COUNT - 1))
 	{
-		lSize = FS_MAX_CHAR_COUNT - 1;
+		stringLen = FS_MAX_CHAR_COUNT - 1;
 	}
 
-	if (strnicmp(m_fixedString, pString, lSize) == 0)
+	if (strnicmp(m_fixedString, pString, stringLen) == 0)
 	{
 		return true;
 	}
@@ -338,13 +365,24 @@ inline bool CFixedString<FS_MAX_CHAR_COUNT>::startsWithNoCase(const char* pStrin
 template<uint32 FS_MAX_CHAR_COUNT>
 inline bool CFixedString<FS_MAX_CHAR_COUNT>::startsWith(const char* pString)
 {
-	int lSize = strlen(pString);
-	if (lSize > (FS_MAX_CHAR_COUNT - 1))
+	const uint32 stringLen = strlen(pString);
+	if (stringLen > (FS_MAX_CHAR_COUNT - 1))
 	{
-		lSize = FS_MAX_CHAR_COUNT - 1;
+		stringLen = FS_MAX_CHAR_COUNT - 1;
 	}
 
-	if (strncmp(m_fixedString, pString,  lSize) == 0)
+	if (strncmp(m_fixedString, pString,  stringLen) == 0)
+	{
+		return true;
+	}
+	return false;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline bool CFixedString<FS_MAX_CHAR_COUNT>::endsWith(const char* pString)
+{
+	const uint32 stringLen = strlen(pString);
+	if (m_stringSize > stringLen && strncmp(m_fixedString + (m_stringSize - stringLen), pString, stringLen) == 0)
 	{
 		return true;
 	}
@@ -367,7 +405,7 @@ inline int CFixedString<FS_MAX_CHAR_COUNT>::countNoOccurances(const char& ch)
 	int occurances(0);
 	for (uint32 i = 0; i < m_stringSize; i++)
 	{
-		if (m_fixedString[i] == *pChar)
+		if (m_fixedString[i] == ch)
 		{
 			occurances++;
 		}
@@ -397,16 +435,153 @@ inline int CFixedString<FS_MAX_CHAR_COUNT>::countNoOccurances(const char* pStrin
 }
 
 template<uint32 FS_MAX_CHAR_COUNT>
-inline CFixedString<FS_MAX_CHAR_COUNT> CFixedString<FS_MAX_CHAR_COUNT>::substr(size_t pos, size_t len)
+inline CFixedString<FS_MAX_CHAR_COUNT> CFixedString<FS_MAX_CHAR_COUNT>::substr(uint32 pos, uint32 len)
 {
 	if ((pos + len) < FS_MAX_CHAR_COUNT)
 	{
-		// ****** TODO: Needs Implementation
-		//memcpy(str.m_pStringBuffer, m_pStringBuffer + pos, len);
-		//return CFixedString<FS_MAX_CHAR_COUNT>();
+		CFixedString<FS_MAX_CHAR_COUNT> fixedStr;
+		memcpy(fixedStr.m_fixedString, m_fixedString + pos, len);
+		return fixedStr;
 	}
-
 	return *this;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline bool CFixedString<FS_MAX_CHAR_COUNT>::append(const char* pString)
+{
+	const uint32 stringLen = strlen(pString);
+	if ((m_stringSize + stringLen) < FS_MAX_CHAR_COUNT)
+	{
+		memcpy(m_fixedString + m_stringSize, pString, stringLen);
+		m_stringSize += stringLen;
+		return true;
+	}
+	return false;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline bool CFixedString<FS_MAX_CHAR_COUNT>::appendPrefix(const char* pString)
+{
+	const uint32 stringLen = strlen(pString);
+	if ((m_stringSize + stringLen) < FS_MAX_CHAR_COUNT)
+	{
+		for (int i = m_stringSize; i >= 0; i--)
+		{
+			m_fixedString[i + stringLen] = m_fixedString[i];
+		}
+		memcpy(m_fixedString, pString, stringLen);
+		m_stringSize += stringLen;
+		return true;
+	}
+	return false;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline int CFixedString<FS_MAX_CHAR_COUNT>::compare(const char* pString)
+{
+	return strcmp(m_fixedString, pString);
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline int CFixedString<FS_MAX_CHAR_COUNT>::compareNoCase(const char* pString)
+{
+	return stricmp(m_fixedString, pString);
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline int CFixedString<FS_MAX_CHAR_COUNT>::find(char ch, uint32 startPos)
+{
+	if (startPos < m_stringSize)
+	{
+		const char* pFirstOccurance = strchr(m_fixedString + startPos, static_cast<int>(ch));
+		if (pFirstOccurance != nullptr)
+		{
+			return (pFirstOccurance - m_fixedString);
+		}
+	}
+	return -1;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline int CFixedString<FS_MAX_CHAR_COUNT>::find(const char* pStrSub, uint32 startPos)
+{
+	if (startPos < m_stringSize)
+	{
+		const char* pFirstOccurance = strstr(m_fixedString + startPos, pStrSub);
+		if (pFirstOccurance != nullptr)
+		{
+			return (pFirstOccurance - m_fixedString);
+		}
+	}
+	return -1;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline int CFixedString<FS_MAX_CHAR_COUNT>::findLastOccurance(char ch)
+{
+	const char* pLastOccurance = strrchr(m_fixedString, static_cast<int>(ch));
+	if (pLastOccurance != nullptr)
+	{
+		return static_cast<int>(pLastOccurance - m_fixedString);
+	}
+	return -1;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline int CFixedString<FS_MAX_CHAR_COUNT>::findLastOccurance(const char* pStrSub)
+{
+	const uint32 strSize = strlen(pStrSub);
+	if (strSize < m_stringSize)
+	{
+		int offset = 0;
+		while (offset < m_stringSize)
+		{
+			const char* pLastOccurance = strstr(m_fixedString + offset, pStrSub);
+			if (pLastOccurance != nullptr)
+			{
+				offset = static_cast<int>(pLastOccurance - m_fixedString) + strSize;
+			}
+
+			if (pLastOccurance == nullptr)
+			{
+				break;
+			}
+		}
+		return offset - strSize;
+	}
+	return -1;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline int CFixedString<FS_MAX_CHAR_COUNT>::reverseFind(char ch)
+{
+	return this->findLastOccurance(ch);
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline int CFixedString<FS_MAX_CHAR_COUNT>::findOneOf(const char* pStrCharSet, uint32 startPos)
+{
+	const uint32 charSetLen = strlen(pStrCharSet);
+	if ((charSetLen + startPos) < m_stringSize)
+	{
+		const char* singleInstMatch = strpbrk(m_fixedString, pStrCharSet);
+		if (singleInstMatch != nullptr)
+		{
+			return static_cast<int>(singleInstMatch - m_fixedString);
+		}
+	}
+	return -1;
+}
+
+template<uint32 FS_MAX_CHAR_COUNT>
+inline bool CFixedString<FS_MAX_CHAR_COUNT>::replace(uint32 pos, uint32 size, const char* pString)
+{
+	if (pos + size < FS_MAX_CHAR_COUNT)
+	{
+		memcpy(m_fixedString + pos, pString, size);
+		return true;
+	}
+	return false;
 }
 
 template<uint32 FS_MAX_CHAR_COUNT>

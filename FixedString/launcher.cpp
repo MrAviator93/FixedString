@@ -4,12 +4,26 @@
 
 int main()
 {
-	CFixedString<32> fixedString("Hello World"); //fixedString(999, StrBaseEnum::BIN);
+	CFixedString<64> fixedString("Hello Worlld!!!"); //fixedString(999, StrBaseEnum::BIN);
 
 	std::cout << fixedString.data() << std::endl;
 
 	std::cout << "No of \"l\" Occurances: " << fixedString.countNoOccurances('l') << std::endl;
 	std::cout << "No of \"lo\" Occurances: " << fixedString.countNoOccurances("lo") << std::endl;
+
+
+	std::cout << "Occ: " << fixedString.findLastOccurance("ll") << std::endl;
+
+
+	std::cout << "SubStr: " << fixedString.substr(6, 7).data() << std::endl;
+
+
+	fixedString.append("test");
+
+	fixedString.appendPrefix("xxx");
+
+
+	std::cout << fixedString.data() << std::endl;
 
 
 	for (const auto& c : fixedString)
