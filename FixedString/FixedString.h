@@ -1,7 +1,7 @@
 /***********************************************************************
 FILE FIXEDSTRING.H CONTAINS FIXED STRING IMPLEMENTATION
 
-FILE UTMOST REVIEW DONE ON (29.04.2020) BY ARTUR K. 
+FILE UTMOST REVIEW DONE ON (14.05.2020) BY ARTUR K. 
 ***********************************************************************/
 
 #ifndef FIXED_STRING_H
@@ -20,14 +20,14 @@ enum class StrBaseEnum
 };
 
 //-----------------------------------------------------------------------
-//FIXED STRING CLASS
+// FIXED STRING CLASS
 //
-//Stack based string class implementation.
-//Note: keep uint32 everywhere, we don't want to recompile header for
-//32 bit and 64 bit separately due to type changes!
+// Stack based string class implementation.
+// Note: keep uint32 everywhere, we don't want to recompile header for
+// 32 bit and 64 bit separately due to type changes!
 //
 // ****** NOTE: MAX_CHAR_COUNT also includes delimiting char.
-//Compiles even on Arduino!
+// Compiles even on Arduino!
 //-----------------------------------------------------------------------
 
 template<uint32 FS_MAX_CHAR_COUNT>
@@ -107,10 +107,10 @@ public:
 // 	void trimRight(const int trimCutSet);
 // 	void trim(const int trimCutSet);
 
-	//Access by reference.
+	// Access by reference.
 	char& operator[](int index);
 
-	//Access by copy.
+	// Access by copy.
 	char operator[](int index) const;
 
 	int		asInt32() const;
