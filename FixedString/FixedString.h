@@ -109,11 +109,11 @@ public:
  	void trimRight(const int trimCutSet);
  	void trim(const int trimCutSet);
 
-	//Assignment operators "="
+	// Assignment operators "="
 	const CFixedString<FS_MAX_CHAR_COUNT>& operator=(char ch);
 	const CFixedString<FS_MAX_CHAR_COUNT>& operator=(const char* pString);
 
-	//Append operators "+="
+	// Append operators "+="
 	const CFixedString<FS_MAX_CHAR_COUNT>& operator+=(char ch);
 	const CFixedString<FS_MAX_CHAR_COUNT>& operator+=(const char* pString);
 
